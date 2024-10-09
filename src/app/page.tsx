@@ -13,11 +13,6 @@ import { Menu, X, ChevronRight, Star, Mail, Phone, MapPin, ArrowRight, Play, Cog
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 
 
-interface ImageProps {
-  src: string
-  name: string
-}
-
 export default function Home() {
 
   const [images, setImages] = useState<string[]>([])
