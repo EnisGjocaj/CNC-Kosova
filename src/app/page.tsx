@@ -9,17 +9,13 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion'
-import { Menu, X, ChevronRight, Star, Mail, Phone, MapPin, Check, ArrowRight, Play, Cog, Users, BarChart, Cpu, ChevronLeft } from 'lucide-react'
+import { Menu, X, ChevronRight, Star, Mail, Phone, MapPin, ArrowRight, Play, Cog, Users, BarChart, Cpu, ChevronLeft } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 
 
 interface ImageProps {
   src: string
   name: string
-}
-
-interface ComponentProps {
-  images: ImageProps[]
 }
 
 export default function Home() {
