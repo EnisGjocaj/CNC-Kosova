@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, MutableRefObject } from 'react'
-import { motion, useAnimation, useMotionValue, useScroll, useTransform } from 'framer-motion'
+import { motion, useScroll, useTransform } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
