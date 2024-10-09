@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, MutableRefObject } from 'react'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { motion, useAnimation, useMotionValue, useScroll, useTransform } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -9,11 +9,42 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion'
-import { Menu, X, ChevronRight, Star, Mail, Phone, MapPin, Check, ArrowRight, Play, Cog, Users, BarChart, Cpu } from 'lucide-react'
+import { Menu, X, ChevronRight, Star, Mail, Phone, MapPin, Check, ArrowRight, Play, Cog, Users, BarChart, Cpu, ChevronLeft } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 
+
+interface ImageProps {
+  src: string
+  name: string
+}
+
+interface ComponentProps {
+  images: ImageProps[]
+}
+
 export default function Home() {
-  const [images, setImages] = useState<string[]>([]);
+
+  const [images, setImages] = useState<string[]>([])
+  const [selectedImage, setSelectedImage] = useState<{ src: string; name: string } | null>(null)
+  const [sliderPosition, setSliderPosition] = useState(0)
+  const sliderRef = useRef<HTMLDivElement>(null)
+
+  const slide = (direction: 'left' | 'right') => {
+    if (sliderRef.current) {
+      const containerWidth = sliderRef.current.clientWidth
+      const scrollAmount = containerWidth * 0.8 // Scroll 80% of the container width
+      const maxScroll = -(sliderRef.current.scrollWidth - containerWidth)
+      
+      if (direction === 'left') {
+        setSliderPosition(prev => Math.min(prev + scrollAmount, 0))
+      } else {
+        setSliderPosition(prev => Math.max(prev - scrollAmount, maxScroll))
+      }
+    }
+  }
+
+  
+  // const [images, setImages] = useState<string[]>([]);
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { scrollYProgress } = useScroll()
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0])
@@ -28,7 +59,7 @@ export default function Home() {
   const galleryRef = useRef(null);
   const contactRef = useRef(null);
 
-  const [selectedImage, setSelectedImage] = useState<{ src: string; name: string } | null>(null);
+  // const [selectedImage, setSelectedImage] = useState<{ src: string; name: string } | null>(null);
   
   const scrollToSection = (ref: MutableRefObject<HTMLElement | null>) => {
     if (ref.current) {
@@ -38,16 +69,14 @@ export default function Home() {
 
 
 
-
-  useEffect(() => {
-    // Assuming you have image names known
-    const imageNames = [
-      'IMG_2887.JPG', 'IMG_2922.JPG', 'IMG_2924.JPG', 'IMG_2923.JPG', 'IMG_2920.JPG', 'IMG_2918.JPG', 'IMG_2915.JPG', 'IMG_2914.JPG', 'IMG_2913.JPG', 'IMG_2910.JPG', 'IMG_2909.JPG', 'IMG_2908.JPG', 'IMG_2907.JPG', 'IMG_2906.JPG', 'IMG_2905.JPG', 'IMG_2904.JPG', 'IMG_2903.JPG', 'IMG_2900.JPG', 'IMG_2899.JPG', 'IMG_2898.JPG', 'IMG_2895.JPG', 'IMG_2894.JPG', 'IMG_2893.JPG', 'IMG_2890.JPG', 'IMG_2889.JPG', 'IMG_2888.JPG', 'IMG_2891.JPG', 'IMG_2892.JPG', 'IMG_2897.JPG', 'IMG_2902.JPG', 'IMG_2901.JPG', 'IMG_2911.JPG', 'IMG_2912.JPG', 'IMG_2916.JPG', 'IMG_2917.JPG', 'IMG_2919.JPG'
-    ];
-    
-    const imagePaths = imageNames.map(name => `/images/${name}`);
-    setImages(imagePaths);
-  }, []);
+// ... existing code ...
+useEffect(() => {
+  const imageNames = [
+    'IMG_2887.JPG', 'IMG_2922.JPG', 'IMG_2924.JPG', 'IMG_2923.JPG', 'IMG_2920.JPG', 'IMG_2918.JPG', 'IMG_2915.JPG', 'IMG_2914.JPG', 'IMG_2913.JPG', 'IMG_2910.JPG', 'IMG_2909.JPG', 'IMG_2908.JPG', 'IMG_2907.JPG', 'IMG_2906.JPG', 'IMG_2905.JPG', 'IMG_2904.JPG', 'IMG_2903.JPG', 'IMG_2900.JPG', 'IMG_2899.JPG', 'IMG_2898.JPG', 'IMG_2895.JPG', 'IMG_2894.JPG', 'IMG_2893.JPG', 'IMG_2890.JPG', 'IMG_2889.JPG', 'IMG_2888.JPG', 'IMG_2891.JPG', 'IMG_2892.JPG', 'IMG_2897.JPG', 'IMG_2902.JPG', 'IMG_2901.JPG', 'IMG_2911.JPG', 'IMG_2912.JPG', 'IMG_2916.JPG', 'IMG_2917.JPG', 'IMG_2919.JPG'
+  ]
+  const imagePaths = imageNames.map(name => `/images/${name}`)
+  setImages(imagePaths)
+}, [])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -331,51 +360,83 @@ export default function Home() {
           </div>
         </section>
 
-        {/* <section id="gallery" ref={galleryRef} className="py-20 bg-gray-50">
-          <div className="container mx-auto px-4">
-            <motion.h2
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeInUpVariants}
-              transition={{ duration: 0.8 }}
-              className="text-3xl font-bold text-center mb-12 text-blue-900"
-            >
-              Innovation Showcase
-            </motion.h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {[...Array(8)].map((_, index) => (
-                <motion.div
-                  key={index}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true }}
-                  variants={fadeInUpVariants}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="relative overflow-hidden rounded-lg shadow-lg group"
-                >
-                  <Image
-                    src={`https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80`}
-                    alt={`Project ${index + 1}`}
-                    width={300}
-                    height={300}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-blue-900 bg-opacity-0 group-hover:bg-opacity-70 transition-opacity duration-300 flex items-center justify-center">
-                    <p className="text-white text-lg font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <section id="gallery" className="py-20 bg-gray-50 overflow-hidden">
+      <div className="container mx-auto px-6 py-10">
+        <h2 className="text-3xl font-bold text-center mb-12 text-blue-900">
+          Innovation Showcase
+        </h2>
+        <div className="relative" ref={sliderRef}>
+          <motion.div
+            animate={{ x: sliderPosition }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            className="flex space-x-4"
+          >
+            {images.map((src, index) => (
+              <div
+                key={index}
+                className="relative overflow-hidden rounded-lg shadow-lg group flex-shrink-0"
+                style={{ width: '300px', height: '200px' }}
+              >
+                <Image
+                  src={src}
+                  alt={`Project ${index + 1}`}
+                  layout="fill"
+                  objectFit="cover"
+                  className="transition-transform duration-300 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-blue-900 bg-opacity-0 group-hover:bg-opacity-70 transition-opacity duration-300 flex items-center justify-center">
+                  <p className="text-white text-lg font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <button onClick={() => setSelectedImage({ src, name: `Project ${index + 1}` })}>
                       View Project
-                    </p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section> */}
+                    </button>
+                  </p>
+                </div>
+              </div>
+            ))}
+          </motion.div>
+          <Button
+            onClick={() => slide('left')}
+            className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50 hover:bg-opacity-75 z-10"
+            variant="ghost"
+            size="icon"
+          >
+            <ChevronLeft className="h-6 w-6" />
+          </Button>
+          <Button
+            onClick={() => slide('right')}
+            className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50 hover:bg-opacity-75 z-10"
+            variant="ghost"
+            size="icon"
+          >
+            <ChevronRight className="h-6 w-6" />
+          </Button>
+        </div>
+      </div>
+
+      <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
+        <DialogContent className="sm:max-w-[800px]">
+          <DialogHeader>
+            <DialogTitle>{selectedImage?.name}</DialogTitle>
+            <DialogDescription>
+              {selectedImage && (
+                <Image
+                  src={selectedImage.src}
+                  alt={selectedImage.name}
+                  width={800}
+                  height={600}
+                  className="w-full h-auto"
+                />
+              )}
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+    </section>
 
 
 
-<section id="gallery" ref={galleryRef} className="py-20 bg-gray-50">
-        <div className="container mx-auto px-6 py-10"> {/* Added padding */}
+{/* <section id="gallery" ref={galleryRef} className="py-20 bg-gray-50">
+        <div className="container mx-auto px-6 py-10"> 
           <motion.h2
             initial="hidden"
             whileInView="visible"
@@ -417,7 +478,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Modal for displaying the selected image */}
+        
         <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
           <DialogContent className="sm:max-w-[800px]">
             <DialogHeader>
@@ -434,7 +495,8 @@ export default function Home() {
             </DialogHeader>
           </DialogContent>
         </Dialog>
-      </section>
+      </section> */}
+
 
         <section id="video-showcase" className="py-20 bg-gray-50">
           <div className="container mx-auto px-4">
@@ -507,11 +569,9 @@ export default function Home() {
             >
               Client Success Stories
             </motion.h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-8">
               {[
                 { name: 'John Doe', company: 'Aerospace Innovations', quote: 'CNC Solutions has revolutionized our production process. Their machines are top-notch and the support is unparalleled.' },
-                { name: 'Jane Smith', company: 'MedTech Devices', quote: 'Weve seen a significant increase in precision and efficiency since partnering with CNC Solutions. Their expertise is invaluable.' },
-                { name: 'Mike Johnson', company: 'Automotive Excellence', quote: 'The quality of CNC Solutions products and services is consistently excellent. Theyre our go-to for all CNC needs.' },
               ].map((testimonial, index) => (
                 <motion.div
                   key={index}
